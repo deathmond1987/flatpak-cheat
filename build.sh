@@ -11,6 +11,17 @@ PROJECT_DESCRIPTION="flatpak openh264 fix v"
 
 ##lib path
 HTTP_PATH="http://ciscobinary.openh264.org/libopenh264-"
+
+## TODO:
+## get download list 
+## DOWNLOAD_URL=$(curl -s https://github.com/cisco/openh264/releases | grep linux64 | grep so.bz2 | cut -d " " -f2 | cut -d= -f 2 | tr -d "\"")
+## INSTALL_VERSIONS=$(echo $DOWNLOAD_URL | cut -d - -f2)
+## ADD VERSIONS TO: for ver in "2.4.1" "2.2.0" "19.08" "2.0" "2.5.0" "2.5.1" "2.3.0" "2.3.1"; do
+##                      su - deck -c "flatpak install -u --runtime --noninteractive runtime/org.freedesktop.Platform.openh264/x86_64/$ver"
+##                  done
+
+##lib path
+HTTP_PATH="http://ciscobinary.openh264.org/libopenh264-"
 OPENH264_VERSION="2.0.0-linux64.5.so.bz2
 2.1.1-linux64.6.so.bz2
 2.2.0-linux64.6.so.bz2
@@ -21,9 +32,6 @@ OPENH264_VERSION="2.0.0-linux64.5.so.bz2
 2.5.1-linux64.7.so.bz2"
 
 ## assign version
-#IFS=$'\n' read -r -d '' -a file_array <<< "$OPENH264_VERSION"
-#sorted_array=($(printf "%s\n" "${file_array[@]}" | sort -V))
-#PROJECT_VERSION=$(tail -n 1 <<< "$(printf "%s\n" "${sorted_array[@]}")")
 PROJECT_VERSION=$(echo "$OPENH264_VERSION" | sort -V| tail -1 | cut -d- -f1)
 
 
