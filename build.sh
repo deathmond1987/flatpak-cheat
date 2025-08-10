@@ -1,18 +1,74 @@
-set -xeuo pipefail
+#!/usr/bin/env bash
 
+set -euo pipefail
+
+##project opts
 EXEC_NAME=flatpak-cheat.sh
 PROJECT_DIR=flatpak-cheat
 UNPACK_PATH=/home/deck/"${PROJECT_DIR}"
 PROJECT_NAME="flatpak openh264 fix"
+OUTPUT_DIR=out
 
+##lib path
 HTTP_PATH="http://ciscobinary.openh264.org/libopenh264-"
 OPENH264_VERSION="2.4.1-linux64.7.so.bz2
+2.0.0-linux64.5.so.bz2
 2.2.0-linux64.6.so.bz2
 2.1.1-linux64.6.so.bz2
 2.5.0-linux64.7.so.bz2
 2.3.0-linux64.6.so.bz2
 2.3.1-linux64.7.so.bz2
 2.5.1-linux64.7.so.bz2"
+
+## main
+## init dirs and files
+if [ -d $PROJECT_DIR ]; then
+        rm -rf $PROJECT_DIR $OUTPUT_DIR
+    mkdir -p "${PROJECT_DIR}" "$OUTPUT_DIR"
+fi
+
+cat <<'EOT' > $PROJECT_DIR/$EXEC_NAME
+#!/usr/bin/env bash
+set -euo pipefail
+SERVER_DIR="/home/deck/flatpak-cheat"
+DOMAIN="ciscobinary.openh264.org"
+HOSTS_ENTRY="127.0.0.1 $DOMAIN"
+
+. /etc/os-release
+if [ "$ID" != "steamos" ]; then
+    echo "This script for SteamOS only! Exiting..." >&2
+    exit 1
+fi
+
+mkdir -p "$SERVER_DIR"
+
+cd "$SERVER_DIR"
+python3 -m http.server 80 1>/dev/null &
+PID=$!
+
+sleep 2
+
+tee -a /etc/hosts >/dev/null <<EOF
+$HOSTS_ENTRY
+EOF
+
+cleanup () {
+    echo "Cleanup..."
+    kill "$PID"
+    sed -i "/$HOSTS_ENTRY/d" /etc/hosts
+    rm -rf "$SERVER_DIR"
+    echo "Cleanup done."
+}
+
+trap cleanup EXIT ERR
+
+su - deck -c "flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
+for ver in "2.4.1" "2.2.0" "19.08" "2.0" "2.5.0" "2.5.1" "2.3.0" "2.3.1"; do
+    su - deck -c "flatpak install -u --runtime --noninteractive runtime/org.freedesktop.Platform.openh264/x86_64/$ver"
+done
+
+echo "Runtimes added. Done."
+EOT
 
 if [ "$@" = "-d" ]; then
     cd "${PROJECT_DIR}"
@@ -33,6 +89,6 @@ makeself --xz \
          --needroot \
          --target "${UNPACK_PATH}" \
                   ./"${PROJECT_DIR}" \
-                  ./"${EXEC_NAME}" \
+                  ./out/"${EXEC_NAME}" \
                   "$PROJECT_NAME" \
                   "${UNPACK_PATH}"/"${EXEC_NAME}"
