@@ -1,26 +1,35 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -xeuo pipefail
 
 ##project opts
 EXEC_NAME=flatpak-cheat.sh
 PROJECT_DIR=flatpak-cheat
 UNPACK_PATH=/home/deck/"${PROJECT_DIR}"
-PROJECT_NAME="flatpak openh264 fix"
 OUTPUT_DIR=out
+PROJECT_DESCRIPTION="flatpak openh264 fix v"
 
 ##lib path
 HTTP_PATH="http://ciscobinary.openh264.org/libopenh264-"
-OPENH264_VERSION="2.4.1-linux64.7.so.bz2
-2.0.0-linux64.5.so.bz2
-2.2.0-linux64.6.so.bz2
+OPENH264_VERSION="2.0.0-linux64.5.so.bz2
 2.1.1-linux64.6.so.bz2
-2.5.0-linux64.7.so.bz2
+2.2.0-linux64.6.so.bz2
 2.3.0-linux64.6.so.bz2
 2.3.1-linux64.7.so.bz2
+2.4.1-linux64.7.so.bz2
+2.5.0-linux64.7.so.bz2
 2.5.1-linux64.7.so.bz2"
 
+## assign version
+#IFS=$'\n' read -r -d '' -a file_array <<< "$OPENH264_VERSION"
+#sorted_array=($(printf "%s\n" "${file_array[@]}" | sort -V))
+#PROJECT_VERSION=$(tail -n 1 <<< "$(printf "%s\n" "${sorted_array[@]}")")
+PROJECT_VERSION=$(echo "$OPENH264_VERSION" | sort -V| tail -1 | cut -d- -f1)
+
+
 ## main
+echo "Building flatpak fix version $PROJECT_VERSION"
+
 ## init dirs and files
 if [ -d $PROJECT_DIR ]; then
         rm -rf $PROJECT_DIR $OUTPUT_DIR
@@ -89,6 +98,6 @@ makeself --xz \
          --needroot \
          --target "${UNPACK_PATH}" \
                   ./"${PROJECT_DIR}" \
-                  ./out/"${EXEC_NAME}" \
-                  "$PROJECT_NAME" \
+                  ./out/${EXEC_NAME//.sh/"-${PROJECT_VERSION}".sh} \
+                  "$PROJECT_DESCRIPTION""$PROJECT_VERSION" \
                   "${UNPACK_PATH}"/"${EXEC_NAME}"
