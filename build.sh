@@ -60,8 +60,6 @@ if [ "$ID" != "steamos" ]; then
     exit 1
 fi
 
-. ./openh264_versions
-
 mkdir -p "$SERVER_DIR"
 
 cd "$SERVER_DIR"
@@ -85,8 +83,11 @@ cleanup () {
 trap cleanup EXIT ERR
 
 su - deck -c "flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
+EOT
+
+cat <<"EOT" > $PROJECT_DIR/$EXEC_NAME
 for ver in $OPENH264_VERSIONS; do
-    su - deck -c "flatpak install -u --runtime --noninteractive runtime/org.freedesktop.Platform.openh264/x86_64/$ver"
+    su - deck -c "flatpak install -u --runtime --noninteractive runtime/org.freedesktop.Platform.openh264/x86_64/\$ver"
 done
 
 echo "Runtimes added. Done."
