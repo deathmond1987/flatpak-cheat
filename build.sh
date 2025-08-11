@@ -8,7 +8,7 @@ PROJECT_DIR=flatpak-cheat
 UNPACK_PATH=/home/deck/"${PROJECT_DIR}"
 OUTPUT_DIR=out
 PROJECT_DESCRIPTION="flatpak openh264 fix v"
-
+OPENH264_VERSIONS="19.08 2.0 2.2.0 2.3.0 2.3.1 2.4.1 2.5.0 2.5.1"
 ##lib path
 HTTP_PATH="http://ciscobinary.openh264.org/libopenh264-"
 
@@ -44,9 +44,12 @@ if [ -d $PROJECT_DIR ]; then
     mkdir -p "${PROJECT_DIR}" "$OUTPUT_DIR"
 fi
 
+echo "OPENH264_VERSIONS=$OPENH264_VERSIONS" > ./$PROJECT_DIR/openh264_versions
+
 cat <<'EOT' > $PROJECT_DIR/$EXEC_NAME
 #!/usr/bin/env bash
 set -euo pipefail
+
 SERVER_DIR="/home/deck/flatpak-cheat"
 DOMAIN="ciscobinary.openh264.org"
 HOSTS_ENTRY="127.0.0.1 $DOMAIN"
@@ -56,6 +59,8 @@ if [ "$ID" != "steamos" ]; then
     echo "This script for SteamOS only! Exiting..." >&2
     exit 1
 fi
+
+. ./openh264_versions
 
 mkdir -p "$SERVER_DIR"
 
@@ -80,7 +85,7 @@ cleanup () {
 trap cleanup EXIT ERR
 
 su - deck -c "flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
-for ver in "2.4.1" "2.2.0" "19.08" "2.0" "2.5.0" "2.5.1" "2.3.0" "2.3.1"; do
+for ver in $OPENH264_VERSIONS; do
     su - deck -c "flatpak install -u --runtime --noninteractive runtime/org.freedesktop.Platform.openh264/x86_64/$ver"
 done
 
