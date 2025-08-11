@@ -44,8 +44,6 @@ if [ -d $PROJECT_DIR ]; then
     mkdir -p "${PROJECT_DIR}" "$OUTPUT_DIR"
 fi
 
-echo "OPENH264_VERSIONS=$OPENH264_VERSIONS" > ./$PROJECT_DIR/openh264_versions
-
 cat <<'EOT' > $PROJECT_DIR/$EXEC_NAME
 #!/usr/bin/env bash
 set -euo pipefail
