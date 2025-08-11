@@ -13,7 +13,7 @@ OPENH264_VERSIONS="19.08 2.0 2.2.0 2.3.0 2.3.1 2.4.1 2.5.0 2.5.1"
 HTTP_PATH="http://ciscobinary.openh264.org/libopenh264-"
 
 ## TODO:
-## get download list 
+## get download list
 ## DOWNLOAD_URL=$(curl -s https://github.com/cisco/openh264/releases | grep linux64 | grep so.bz2 | cut -d " " -f2 | cut -d= -f 2 | tr -d "\"")
 ## INSTALL_VERSIONS=$(echo $DOWNLOAD_URL | cut -d - -f2)
 ## ADD VERSIONS TO: for ver in "2.4.1" "2.2.0" "19.08" "2.0" "2.5.0" "2.5.1" "2.3.0" "2.3.1"; do
@@ -40,9 +40,9 @@ echo "Building flatpak fix version $PROJECT_VERSION"
 
 ## init dirs and files
 if [ -d $PROJECT_DIR ]; then
-        rm -rf $PROJECT_DIR $OUTPUT_DIR
-    mkdir -p "${PROJECT_DIR}" "$OUTPUT_DIR"
+    rm -rf $PROJECT_DIR $OUTPUT_DIR
 fi
+mkdir -p "${PROJECT_DIR}" "$OUTPUT_DIR"
 
 cat <<'EOT' > $PROJECT_DIR/$EXEC_NAME
 #!/usr/bin/env bash
@@ -83,13 +83,13 @@ trap cleanup EXIT ERR
 su - deck -c "flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
 EOT
 
-cat <<"EOT" >> $PROJECT_DIR/$EXEC_NAME
+cat << EOF >> $PROJECT_DIR/$EXEC_NAME
 for ver in $OPENH264_VERSIONS; do
     su - deck -c "flatpak install -u --runtime --noninteractive runtime/org.freedesktop.Platform.openh264/x86_64/\$ver"
 done
 
 echo "Runtimes added. Done."
-EOT
+EOF
 
 cd "${PROJECT_DIR}"
 while read -r link; do
