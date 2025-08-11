@@ -81,6 +81,7 @@ for ver in $OPENH264_VERSIONS; do
 done
 
 echo "Runtimes added. Done."
+cleanup
 EOF
 
 ## download libs
@@ -106,4 +107,3 @@ makeself --xz \
                   ./out/${EXEC_NAME//.sh/"-${PROJECT_VERSION}".sh} \
                   "$PROJECT_DESCRIPTION""$PROJECT_VERSION" \
                   "${UNPACK_PATH}"/"${EXEC_NAME}"
-cleanup
