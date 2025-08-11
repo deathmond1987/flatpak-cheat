@@ -87,14 +87,12 @@ done
 echo "Runtimes added. Done."
 EOT
 
-if [ "$@" = "-d" ]; then
-    cd "${PROJECT_DIR}"
-    rm -f lib*
-    while read -r link; do
-        wget "$HTTP_PATH""$link"
-    done <<< "$OPENH264_VERSION"
-    cd -
-fi
+cd "${PROJECT_DIR}"
+while read -r link; do
+    wget "$HTTP_PATH""$link"
+done <<< "$OPENH264_VERSION"
+cd -
+
 chmod 777 ./"${PROJECT_DIR}"/"${EXEC_NAME}"
 chown -R 1000:1000 ./*
 
