@@ -69,7 +69,7 @@ cleanup () {
     echo "Cleanup done."
 }
 
-trap cleanup EXIT ERR
+trap cleanup ERR
 
 su - deck -c "flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
 EOT
@@ -106,3 +106,4 @@ makeself --xz \
                   ./out/${EXEC_NAME//.sh/"-${PROJECT_VERSION}".sh} \
                   "$PROJECT_DESCRIPTION""$PROJECT_VERSION" \
                   "${UNPACK_PATH}"/"${EXEC_NAME}"
+cleanup
