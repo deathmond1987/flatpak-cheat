@@ -4,7 +4,7 @@ set -xeuo pipefail
 
 ##project opts
 EXEC_NAME=flatpak-cheat.sh
-PROJECT_DIR=flatpak-cheat
+PROJECT_DIR=.flatpak-cheat
 UNPACK_PATH=/home/deck/"${PROJECT_DIR}"
 OUTPUT_DIR=out
 PROJECT_DESCRIPTION="flatpak openh264 fix v"
@@ -19,22 +19,23 @@ OPENH264_VERSION="2.0.0-linux64.5.so.bz2
 2.3.1-linux64.7.so.bz2
 2.4.1-linux64.7.so.bz2
 2.5.0-linux64.7.so.bz2
-2.5.1-linux64.7.so.bz2"
+2.5.1-linux64.7.so.bz2
+2.6.0-linux64.8.so.bz2"
 
 ## assign script version
-PROJECT_VERSION=$(echo "$OPENH264_VERSION" | sort -V| tail -1 | cut -d- -f1)
+PROJECT_VERSION=$(echo "${OPENH264_VERSION}" | sort -V| tail -1 | cut -d- -f1)
 
 
 ## main
 echo "Building flatpak fix version $PROJECT_VERSION"
 
 ## init dirs and files
-if [ -d $PROJECT_DIR ]; then
-    rm -rf $PROJECT_DIR $OUTPUT_DIR
+if [ -d "${PROJECT_DIR}" ]; then
+    rm -rf "${PROJECT_DIR}" "${OUTPUT_DIR}"
 fi
-mkdir -p "${PROJECT_DIR}" "$OUTPUT_DIR"
+mkdir -p "${PROJECT_DIR}" "${OUTPUT_DIR}"
 
-cat <<'EOT' > $PROJECT_DIR/$EXEC_NAME
+cat <<'EOT' > "${PROJECT_DIR}"/"${EXEC_NAME}"
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -74,7 +75,7 @@ su - deck -c "flatpak remote-add --user --if-not-exists flathub https://flathub.
 EOT
 
 ## and part of script with expand variables
-cat << EOF >> $PROJECT_DIR/$EXEC_NAME
+cat << EOF >> "${PROJECT_DIR}"/"${EXEC_NAME}"
 for ver in $OPENH264_VERSIONS; do
     su - deck -c "flatpak install -u --runtime --noninteractive runtime/org.freedesktop.Platform.openh264/x86_64/\$ver"
 done
@@ -85,7 +86,7 @@ EOF
 ## download libs
 cd "${PROJECT_DIR}"
 while read -r link; do
-    wget "$HTTP_PATH""$link"
+    wget "${HTTP_PATH}""$link"
 done <<< "$OPENH264_VERSION"
 cd -
 
