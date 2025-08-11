@@ -39,7 +39,7 @@ cat <<'EOT' > "${PROJECT_DIR}"/"${EXEC_NAME}"
 #!/usr/bin/env bash
 set -euo pipefail
 
-SERVER_DIR="/home/deck/.flatpak-cheat"
+SERVER_DIR="$(dirname $0)"
 DOMAIN="ciscobinary.openh264.org"
 HOSTS_ENTRY="127.0.0.1 $DOMAIN"
 
